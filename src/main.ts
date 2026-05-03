@@ -1,8 +1,17 @@
-import { createApp } from "gunshi";
 import { consola } from "consola";
 import * as fs from "fs";
+import { Command } from "commander";
+import { load, save, deleteTask, type Task } from "./fs";
 
-const program = createApp({
-  name: "task-cli",
-  version: "0.1.0",
-});
+const runCLI = () => {
+  const program = new Command();
+
+  program.name("task").description("task management cli tool").version("0.1.0");
+
+  program
+    .command("add")
+    .argument("<text>")
+    .action((text) => {
+      save(text);
+    });
+};
