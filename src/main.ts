@@ -1,7 +1,8 @@
+#!/usr/bin/env node
+
 import { consola } from "consola";
-import * as fs from "fs";
 import { Command } from "commander";
-import { load, save, deleteTask, type Task } from "./fs";
+import { load, save, deleteTask, type Task, deletetask } from "./fs";
 
 const runCLI = () => {
   const program = new Command();
@@ -14,4 +15,22 @@ const runCLI = () => {
     .action((text) => {
       save(text);
     });
+
+  program
+    .command("list")
+    .argument("<text>")
+    .action((text) => {
+      consola.log(load());
+    });
+
+  program
+    .command("delete")
+    .argument("<id>")
+    .action((id: number) => {
+      deletetask(id);
+    });
+
+  program.parse();
 };
+
+runCLI();
