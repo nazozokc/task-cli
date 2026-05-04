@@ -35,3 +35,18 @@ export const deletetask = (id: number): void => {
   const deletetask = task.filter((i) => i.id !== id);
   save(deletetask);
 };
+
+export const doneTask = (id: number): void => {
+  const tasks = load();
+
+  // mapで配列を書き換え
+  // ...はオブジェクトの中身を全部コピーする
+  const newTasks = tasks.map((task) => {
+    if (task.id === id) {
+      return { ...task, done: true };
+    }
+    return task;
+  });
+
+  save(newTasks);
+};

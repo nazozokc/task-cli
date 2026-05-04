@@ -2,7 +2,7 @@
 
 import { consola } from "consola";
 import { Command } from "commander";
-import { load, save, deleteTask, type Task, deletetask } from "./fs";
+import { load, save, deleteTask, doneTask, type Task } from "./fs";
 
 const runCLI = () => {
   const program = new Command();
@@ -13,7 +13,15 @@ const runCLI = () => {
     .command("add")
     .argument("<text>")
     .action((text) => {
-      save(text);
+      const newTask: Task = {
+        id: Date.now(),
+        text,
+        done: false,
+      };
+
+      const tasks = load();
+      tasks.push(newTask);
+      save(tasks);
     });
 
   program
@@ -28,6 +36,13 @@ const runCLI = () => {
     .argument("<id>")
     .action((id: number) => {
       deletetask(id);
+    });
+
+  program
+    .command("done")
+    .argument("<id>")
+    .action((id: number) => {
+      doneTask(id);
     });
 
   program.parse();
