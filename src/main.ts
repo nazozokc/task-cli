@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+#!/usr/bin/env bun
 
 import { consola } from "consola";
 import { Command } from "commander";
@@ -12,40 +12,60 @@ const runCLI = () => {
   program
     .command("add")
     .argument("<text>")
-    .action((text) => {
+    .action(async (text) => {
       const newTask: Task = {
         id: Date.now(),
         text,
         done: false,
       };
 
-      const tasks = load();
+      const tasks = await load();
       tasks.push(newTask);
-      save(tasks);
+      await save(tasks);
+      consola.success(`Task added: ${text}`);
     });
 
   program
     .command("list")
-    .argument("<text>")
-    .action((text) => {
-      consola.log(load());
+    .action(async () => {
+      const tasks = await load();
+      if (tasks.length === 0) {
+        consola.info("No tasks found");
+        return;
+      }
+      tasks.forEach((task) => {
+        const checkbox = task.done ? "[x]" : "[ ]";
+        consola.log(`${checkbox} ${task.id}: ${task.text}`);
+      });
     });
 
   program
     .command("delete")
     .argument("<id>")
-    .action((id: number) => {
-      deletetask(id);
+    .action(async (id: string) => {
+      const taskId = Number(id);
+      if (isNaN(taskId)) {
+        consola.error("Invalid task ID");
+        return;
+      }
+      await deleteTask(taskId);
+      consola.success(`Task ${id} deleted`);
     });
 
   program
     .command("done")
     .argument("<id>")
-    .action((id: number) => {
-      doneTask(id);
+    .action(async (id: string) => {
+      const taskId = Number(id);
+      if (isNaN(taskId)) {
+        consola.error("Invalid task ID");
+        return;
+      }
+      await doneTask(taskId);
+      consola.success(`Task ${id} marked as done`);
     });
 
-  program.parse();
+  program.parseAsync();
 };
 
 runCLI();
